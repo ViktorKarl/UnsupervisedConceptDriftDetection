@@ -9,7 +9,7 @@ results_summarized/*
 datasets/files/*.arff
 datasets/files/*.csv
 datasets/files/*.zip
-
+datasets/files/*.DS_Store
 # result csvs
 results/*.csv
 
