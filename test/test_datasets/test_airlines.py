@@ -2,7 +2,6 @@ import unittest
 
 from datasets import Airlines
 
-
 class AirlinesTest(unittest.TestCase):
     def setUp(self):
         self.stream = Airlines(directory_path="datasets/files")
