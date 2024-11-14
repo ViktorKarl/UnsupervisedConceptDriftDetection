@@ -77,6 +77,8 @@ class Configuration:
         streams.append(SineClusters(drift_frequency=5000, stream_length=154_987, seed=531874))
     if stream_selection["WaveformDrift2"]:
         streams.append(WaveformDrift2(drift_frequency=5000, stream_length=154_987, seed=2401137))
+
+    # Our own insearted datasets: 
     if stream_selection["Synthetic"]:
         streams.append(synthetic())
 
