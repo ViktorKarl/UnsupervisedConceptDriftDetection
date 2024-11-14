@@ -7,7 +7,7 @@ from datasets import (
     InsectsIncrementalReoccurringBalanced,
     NOAAWeather,
     OutdoorObjects,
-    synthetic,
+    Synthetic,
     PokerHand,
     Powersupply,
     RialtoBridgeTimelapse,
@@ -27,14 +27,14 @@ class Configuration:
         "InsectsIncrementalAbruptBalanced": False,
         "InsectsIncrementalBalanced": False,
         "InsectsIncrementalReoccurringBalanced": False,
-        "NOAAWeather": True,
+        "NOAAWeather": False,
         "OutdoorObjects": False,
         "PokerHand": False,
         "Powersupply": False,
         "RialtoBridgeTimelapse": False,
         "SineClusters": False,
         "WaveformDrift2": False,
-        "Synthetic": False
+        "Synthetic": True
     }
 
 
@@ -80,7 +80,7 @@ class Configuration:
 
     # Our own insearted datasets: 
     if stream_selection["Synthetic"]:
-        streams.append(synthetic())
+        streams.append(Synthetic())
 
 
     n_training_samples = 1000

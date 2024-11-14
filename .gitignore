@@ -6,6 +6,8 @@ results_periodic/*
 results_summarized/*
 results/*
 
+synthetic_generation/data/*
+
 # large dataset files
 datasets/files/*.arff
 datasets/files/*.csv
