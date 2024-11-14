@@ -7,6 +7,7 @@ from datasets import (
     InsectsIncrementalReoccurringBalanced,
     NOAAWeather,
     OutdoorObjects,
+    synthetic,
     PokerHand,
     Powersupply,
     RialtoBridgeTimelapse,
@@ -32,7 +33,8 @@ class Configuration:
         "Powersupply": False,
         "RialtoBridgeTimelapse": False,
         "SineClusters": False,
-        "WaveformDrift2": False
+        "WaveformDrift2": False,
+        "Synthetic": False
     }
 
 
@@ -75,6 +77,8 @@ class Configuration:
         streams.append(SineClusters(drift_frequency=5000, stream_length=154_987, seed=531874))
     if stream_selection["WaveformDrift2"]:
         streams.append(WaveformDrift2(drift_frequency=5000, stream_length=154_987, seed=2401137))
+    if stream_selection["Synthetic"]:
+        streams.append(synthetic())
 
 
     n_training_samples = 1000
