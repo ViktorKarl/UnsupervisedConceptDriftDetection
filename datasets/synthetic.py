@@ -18,8 +18,6 @@ class Synthetic(base.FileDataset):
         self.full_path = path.join(directory_path, self.filename)
 
     def __iter__(self):
-        #converters = {f"attribute{i}": float for i in range(1, 5)}
-        # temperature,humidity,wind_speed,precipitation,class
         converters = {'temperature': float, 'humidity': float, 'wind_speed': float, 'precipitation': float}
         converters["class"] = int
         return stream.iter_csv(
