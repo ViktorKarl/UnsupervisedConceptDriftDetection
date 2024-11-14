@@ -4,6 +4,7 @@ results_figures/*
 results_no_detections/*
 results_periodic/*
 results_summarized/*
+results/*
 
 # large dataset files
 datasets/files/*.arff
