@@ -5,6 +5,7 @@ results_no_detections/*
 results_periodic/*
 results_summarized/*
 results/*
+*.out
 
 synthetic_generation/data/*
 
