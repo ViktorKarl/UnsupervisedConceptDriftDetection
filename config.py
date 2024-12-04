@@ -39,14 +39,17 @@ class Configuration:
 
 
     model_selection = {
-        "BayesianNonparametricDetectionMethod": True,
+        "BayesianNonparametricDetectionMethod": False,
         "ClusteredStatisticalTestDriftDetectionMethod": False,
         "DiscriminativeDriftDetector2019": False,
         "ImageBasedDriftDetector": False,
         "OneClassDriftDetector": False,
         "SemiParametricLogLikelihood": False,
         "UDetect_Disjoint": False,
-        "UDetect_NonDisjoint": False
+        "UDetect_NonDisjoint": False,
+        "KullbackLeiblerDistanceDetector": True,
+        "JensenShannonDistanceDetector": True,
+        "HellingerDistanceDetector": True
     }
 
     streams = []
@@ -181,6 +184,36 @@ class Configuration:
                 Parameter("n_windows", values=[50, 100, 250]),
                 Parameter("n_samples", values=[100, 250, 500, 1000]),
                 Parameter("disjoint_training_windows", value=False)
+            ],
+            seeds=None,
+            n_runs=1,
+        ))
+    if model_selection["KullbackLeiblerDistanceDetector"]:
+        models.append(ModelOptimizer(
+            base_model=KullbackLeiblerDistanceDetector,
+            parameters=[
+                Parameter("n_samples", values=[100, 672, 1344]),
+                Parameter("threshold", values=[0.01, 0.05, 0.1]),
+            ],
+            seeds=None,
+            n_runs=1,
+        ))
+    if model_selection["JensenShannonDistanceDetector"]:
+        models.append(ModelOptimizer(
+            base_model=JensenShannonDistanceDetector,
+            parameters=[
+                Parameter("n_samples", values=[100, 672, 1344]),
+                Parameter("threshold", values=[0.1, 0.2, 0.3]),
+            ],
+            seeds=None,
+            n_runs=1,
+        ))
+    if model_selection["HellingerDistanceDetector"]:
+        models.append(ModelOptimizer(
+            base_model=HellingerDistanceDetector,
+            parameters=[
+                Parameter("n_samples", values=[100, 672, 1344]),
+                Parameter("threshold", values=[0.05, 0.1, 0.2]),
             ],
             seeds=None,
             n_runs=1,
