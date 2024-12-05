@@ -1,9 +1,6 @@
 from collections import deque
-
 import numpy as np
 from scipy.stats import gaussian_kde
-
-
 from .base import UnsupervisedDriftDetector
 
 

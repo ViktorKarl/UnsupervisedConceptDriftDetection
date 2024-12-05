@@ -1,9 +1,7 @@
 from collections import deque
-
 import numpy as np
 from scipy.stats import gaussian_kde
 from scipy.spatial.distance import jensenshannon
-
 from .base import UnsupervisedDriftDetector
 
 
