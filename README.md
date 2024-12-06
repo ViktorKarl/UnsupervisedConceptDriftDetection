@@ -1,3 +1,13 @@
+# Welcome to our repo on drift detection: 
+
+## Best practices:
+- When running main, name the run. Like this: python main.py <name_of_run> config.py
+Insert your own <name_of_run>
+
+
+
+
+
 # A benchmark and survey of fully unsupervised concept drift detectors on real-world data streams
 
 Original athors repo: https://github.com/DFKI-NI/unsupervised-concept-drift-detection?tab=readme-ov-file

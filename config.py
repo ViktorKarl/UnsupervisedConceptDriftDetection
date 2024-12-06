@@ -7,6 +7,7 @@ from datasets import (
     InsectsIncrementalReoccurringBalanced,
     NOAAWeather,
     OutdoorObjects,
+    Synthetic,
     PokerHand,
     Powersupply,
     RialtoBridgeTimelapse,
@@ -19,24 +20,78 @@ from optimization.parameter import Parameter
 
 
 class Configuration:
-    streams = [
-        Electricity(),
-        InsectsAbruptBalanced(),
-        InsectsGradualBalanced(),
-        InsectsIncrementalAbruptBalanced(),
-        InsectsIncrementalBalanced(),
-        InsectsIncrementalReoccurringBalanced(),
-        NOAAWeather(),
-        OutdoorObjects(),
-        PokerHand(),
-        Powersupply(),
-        RialtoBridgeTimelapse(),
-        SineClusters(drift_frequency=5000, stream_length=154_987, seed=531874),
-        WaveformDrift2(drift_frequency=5000, stream_length=154_987, seed=2401137),
-    ]
+    stream_selection = {
+        "Electricity": False,
+        "InsectsAbruptBalanced": False,
+        "InsectsGradualBalanced": False,
+        "InsectsIncrementalAbruptBalanced": False,
+        "InsectsIncrementalBalanced": False,
+        "InsectsIncrementalReoccurringBalanced": False,
+        "NOAAWeather": False,
+        "OutdoorObjects": False,
+        "PokerHand": False,
+        "Powersupply": False,
+        "RialtoBridgeTimelapse": False,
+        "SineClusters": False,
+        "WaveformDrift2": False,
+        "Synthetic": True
+    }
+
+
+    model_selection = {
+        "BayesianNonparametricDetectionMethod": False,
+        "ClusteredStatisticalTestDriftDetectionMethod": False,
+        "DiscriminativeDriftDetector2019": False,
+        "ImageBasedDriftDetector": False,
+        "OneClassDriftDetector": False,
+        "SemiParametricLogLikelihood": False,
+        "UDetect_Disjoint": False,
+        "UDetect_NonDisjoint": False,
+        "KullbackLeiblerDistanceDetector": True,
+        "JensenShannonDistanceDetector": True,
+        "HellingerDistanceDetector": True
+    }
+
+    streams = []
+
+    if stream_selection["Electricity"]:
+        streams.append(Electricity())
+    if stream_selection["InsectsAbruptBalanced"]:
+        streams.append(InsectsAbruptBalanced())
+    if stream_selection["InsectsGradualBalanced"]:
+        streams.append(InsectsGradualBalanced())
+    if stream_selection["InsectsIncrementalAbruptBalanced"]:
+        streams.append(InsectsIncrementalAbruptBalanced())
+    if stream_selection["InsectsIncrementalBalanced"]:
+        streams.append(InsectsIncrementalBalanced())
+    if stream_selection["InsectsIncrementalReoccurringBalanced"]:
+        streams.append(InsectsIncrementalReoccurringBalanced())
+    if stream_selection["NOAAWeather"]:
+        streams.append(NOAAWeather())
+    if stream_selection["OutdoorObjects"]:
+        streams.append(OutdoorObjects())
+    if stream_selection["PokerHand"]:
+        streams.append(PokerHand())
+    if stream_selection["Powersupply"]:
+        streams.append(Powersupply())
+    if stream_selection["RialtoBridgeTimelapse"]:
+        streams.append(RialtoBridgeTimelapse())
+    if stream_selection["SineClusters"]:
+        streams.append(SineClusters(drift_frequency=5000, stream_length=154_987, seed=531874))
+    if stream_selection["WaveformDrift2"]:
+        streams.append(WaveformDrift2(drift_frequency=5000, stream_length=154_987, seed=2401137))
+
+    # Our own insearted datasets: 
+    if stream_selection["Synthetic"]:
+        streams.append(Synthetic())
+
+
     n_training_samples = 1000
-    models = [
-        ModelOptimizer(
+
+    models = []
+
+    if model_selection["BayesianNonparametricDetectionMethod"]:
+        models.append(ModelOptimizer(
             base_model=BayesianNonparametricDetectionMethod,
             parameters=[
                 Parameter("n_samples", values=[100, 250, 500, 1000]),
@@ -46,8 +101,10 @@ class Configuration:
             ],
             seeds=None,
             n_runs=1,
-        ),
-        ModelOptimizer(
+        ))
+
+    if model_selection["ClusteredStatisticalTestDriftDetectionMethod"]:
+        models.append(ModelOptimizer(
             base_model=ClusteredStatisticalTestDriftDetectionMethod,
             parameters=[
                 Parameter("n_samples", values=[100, 250, 500, 1000]),
@@ -57,8 +114,10 @@ class Configuration:
             ],
             seeds=None,
             n_runs=5,
-        ),
-        ModelOptimizer(
+        ))
+
+    if model_selection["DiscriminativeDriftDetector2019"]:
+        models.append(ModelOptimizer(
             base_model=DiscriminativeDriftDetector2019,
             parameters=[
                 Parameter("n_reference_samples", values=[50, 125, 250, 500]),
@@ -67,8 +126,10 @@ class Configuration:
             ],
             seeds=None,
             n_runs=5,
-        ),
-        ModelOptimizer(
+        ))
+
+    if model_selection["ImageBasedDriftDetector"]:
+        models.append(ModelOptimizer(
             base_model=ImageBasedDriftDetector,
             parameters=[
                 Parameter("n_samples", values=[100, 250, 500, 1000]),
@@ -78,8 +139,10 @@ class Configuration:
             ],
             seeds=None,
             n_runs=5,
-        ),
-        ModelOptimizer(
+        ))
+
+    if model_selection["OneClassDriftDetector"]:
+        models.append(ModelOptimizer(
             base_model=OneClassDriftDetector,
             parameters=[
                 Parameter("n_samples", values=[100, 250, 500, 1000]),
@@ -88,8 +151,10 @@ class Configuration:
             ],
             seeds=None,
             n_runs=1,
-        ),
-        ModelOptimizer(
+        ))
+
+    if model_selection["SemiParametricLogLikelihood"]:
+        models.append(ModelOptimizer(
             base_model=SemiParametricLogLikelihood,
             parameters=[
                 Parameter("n_samples", values=[100, 250, 500, 1000]),
@@ -98,8 +163,10 @@ class Configuration:
             ],
             seeds=None,
             n_runs=1,
-        ),
-        ModelOptimizer(
+        ))
+
+    if model_selection["UDetect_Disjoint"]:
+        models.append(ModelOptimizer(
             base_model=UDetect,
             parameters=[
                 Parameter("n_windows", values=[25, 50, 100]),
@@ -108,8 +175,10 @@ class Configuration:
             ],
             seeds=None,
             n_runs=1,
-        ),
-        ModelOptimizer(
+        ))
+
+    if model_selection["UDetect_NonDisjoint"]:
+        models.append(ModelOptimizer(
             base_model=UDetect,
             parameters=[
                 Parameter("n_windows", values=[50, 100, 250]),
@@ -118,5 +187,34 @@ class Configuration:
             ],
             seeds=None,
             n_runs=1,
-        )
-    ]
+        ))
+    if model_selection["KullbackLeiblerDistanceDetector"]:
+        models.append(ModelOptimizer(
+            base_model=KullbackLeiblerDistanceDetector,
+            parameters=[
+                Parameter("n_samples", values=[100, 672, 1344]),
+                Parameter("threshold", values=[0.01, 0.05, 0.1]),
+            ],
+            seeds=None,
+            n_runs=1,
+        ))
+    if model_selection["JensenShannonDistanceDetector"]:
+        models.append(ModelOptimizer(
+            base_model=JensenShannonDistanceDetector,
+            parameters=[
+                Parameter("n_samples", values=[100, 672, 1344]),
+                Parameter("threshold", values=[0.1, 0.2, 0.3]),
+            ],
+            seeds=None,
+            n_runs=1,
+        ))
+    if model_selection["HellingerDistanceDetector"]:
+        models.append(ModelOptimizer(
+            base_model=HellingerDistanceDetector,
+            parameters=[
+                Parameter("n_samples", values=[100, 672, 1344]),
+                Parameter("threshold", values=[0.05, 0.1, 0.2]),
+            ],
+            seeds=None,
+            n_runs=1,
+        ))

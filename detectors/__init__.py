@@ -8,3 +8,6 @@ from .ocdd import OneClassDriftDetector
 from .spll import SemiParametricLogLikelihood
 from .ucdd import UCDD
 from .udetect import UDetect
+from .helldist import HellingerDistanceDetector
+from .jesnsha import JensenShannonDistanceDetector
+from .kldi import KullbackLeiblerDistanceDetector
