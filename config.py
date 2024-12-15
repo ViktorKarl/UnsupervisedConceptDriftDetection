@@ -37,10 +37,9 @@ class Configuration:
         "Synthetic": True
     }
 
-
     model_selection = {
-        "BayesianNonparametricDetectionMethod": False,
-        "ClusteredStatisticalTestDriftDetectionMethod": False,
+        "BayesianNonparametricDetectionMethod": True,
+        "ClusteredStatisticalTestDriftDetectionMethod": True,
         "DiscriminativeDriftDetector2019": False,
         "ImageBasedDriftDetector": False,
         "OneClassDriftDetector": False,
@@ -48,7 +47,7 @@ class Configuration:
         "UDetect_Disjoint": False,
         "UDetect_NonDisjoint": False,
         "KullbackLeiblerDistanceDetector": True,
-        "JensenShannonDistanceDetector": True,
+        "JensenShannonDistanceDetector": False,
         "HellingerDistanceDetector": True
     }
 
@@ -94,10 +93,10 @@ class Configuration:
         models.append(ModelOptimizer(
             base_model=BayesianNonparametricDetectionMethod,
             parameters=[
-                Parameter("n_samples", values=[100, 250, 500, 1000]),
+                Parameter("n_samples", values=[500, 1000]),
                 Parameter("const", values=[0.5, 1.0]),
-                Parameter("max_depth", values=[2, 3]),
-                Parameter("threshold", values=[0.45, 0.5, 0.55]),
+                Parameter("max_depth", values=[2]),
+                Parameter("threshold", values=[0.5]),
             ],
             seeds=None,
             n_runs=1,
@@ -107,10 +106,10 @@ class Configuration:
         models.append(ModelOptimizer(
             base_model=ClusteredStatisticalTestDriftDetectionMethod,
             parameters=[
-                Parameter("n_samples", values=[100, 250, 500, 1000]),
+                Parameter("n_samples", values=[500, 1000]),
                 Parameter("confidence", values=[0.1, 0.01]),
-                Parameter("feature_proportion", values=[0.1, 0.01]),
-                Parameter("n_clusters", values=[2, 3]),
+                Parameter("feature_proportion", values=[0.1]),
+                Parameter("n_clusters", values=[2]),
             ],
             seeds=None,
             n_runs=5,
@@ -192,8 +191,8 @@ class Configuration:
         models.append(ModelOptimizer(
             base_model=KullbackLeiblerDistanceDetector,
             parameters=[
-                Parameter("n_samples", values=[100, 672, 1344]),
-                Parameter("threshold", values=[0.01, 0.05, 0.1]),
+                Parameter("n_samples", values=[672]),
+                Parameter("threshold", values=[0.05]),  #[0.01, 0.05, 0.1]),
             ],
             seeds=None,
             n_runs=1,
@@ -202,7 +201,7 @@ class Configuration:
         models.append(ModelOptimizer(
             base_model=JensenShannonDistanceDetector,
             parameters=[
-                Parameter("n_samples", values=[100, 672, 1344]),
+                Parameter("n_samples", values=[672, 1344]),
                 Parameter("threshold", values=[0.1, 0.2, 0.3]),
             ],
             seeds=None,
@@ -212,8 +211,8 @@ class Configuration:
         models.append(ModelOptimizer(
             base_model=HellingerDistanceDetector,
             parameters=[
-                Parameter("n_samples", values=[100, 672, 1344]),
-                Parameter("threshold", values=[0.05, 0.1, 0.2]),
+                Parameter("n_samples", values=[672]),
+                Parameter("threshold", values=[0.1]),
             ],
             seeds=None,
             n_runs=1,

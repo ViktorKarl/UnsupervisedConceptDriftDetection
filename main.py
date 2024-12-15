@@ -2,6 +2,7 @@ import sys
 import time
 
 from runner import run
+from ensemble import ensemble
 
 
 def main():
@@ -10,8 +11,10 @@ def main():
     else:
         experiment_name = int(time.time())
     run(experiment_name)
+    ensemble(experiment_name)
 
 
 if __name__ == "__main__":
     main()
     print("Done")
+
