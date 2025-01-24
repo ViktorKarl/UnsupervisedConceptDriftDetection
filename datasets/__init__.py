@@ -4,6 +4,7 @@ from .electricity import Electricity
 from .forest_covertype import ForestCovertype
 from .gas_sensor import GasSensor
 from .synthetic import Synthetic
+from .Austevoll_nord import AustevollNord
 from .insects import (
     InsectsAbruptBalanced,
     InsectsAbruptImbalanced,

@@ -12,7 +12,8 @@ from datasets import (
     Powersupply,
     RialtoBridgeTimelapse,
     SineClusters,
-    WaveformDrift2
+    WaveformDrift2,
+    AustevollNord
 )
 from detectors import *
 from optimization.model_optimizer import ModelOptimizer
@@ -34,21 +35,22 @@ class Configuration:
         "RialtoBridgeTimelapse": False,
         "SineClusters": False,
         "WaveformDrift2": False,
-        "Synthetic": True
+        "Synthetic":False,
+        "AustevollNord": True
     }
 
     model_selection = {
         "BayesianNonparametricDetectionMethod": True,
-        "ClusteredStatisticalTestDriftDetectionMethod": True,
+        "ClusteredStatisticalTestDriftDetectionMethod": False,
         "DiscriminativeDriftDetector2019": False,
         "ImageBasedDriftDetector": False,
         "OneClassDriftDetector": False,
         "SemiParametricLogLikelihood": False,
         "UDetect_Disjoint": False,
         "UDetect_NonDisjoint": False,
-        "KullbackLeiblerDistanceDetector": True,
+        "KullbackLeiblerDistanceDetector": False,
         "JensenShannonDistanceDetector": False,
-        "HellingerDistanceDetector": True
+        "HellingerDistanceDetector": False
     }
 
     streams = []
@@ -79,6 +81,8 @@ class Configuration:
         streams.append(SineClusters(drift_frequency=5000, stream_length=154_987, seed=531874))
     if stream_selection["WaveformDrift2"]:
         streams.append(WaveformDrift2(drift_frequency=5000, stream_length=154_987, seed=2401137))
+    if stream_selection["AustevollNord"]:
+        streams.append(AustevollNord())
 
     # Our own insearted datasets: 
     if stream_selection["Synthetic"]:
@@ -93,8 +97,8 @@ class Configuration:
         models.append(ModelOptimizer(
             base_model=BayesianNonparametricDetectionMethod,
             parameters=[
-                Parameter("n_samples", values=[500, 1000]),
-                Parameter("const", values=[0.5, 1.0]),
+                Parameter("n_samples", values=[500]),#, 1000]),
+                Parameter("const", values=[0.5]),#, 1.0]),
                 Parameter("max_depth", values=[2]),
                 Parameter("threshold", values=[0.5]),
             ],
@@ -106,8 +110,8 @@ class Configuration:
         models.append(ModelOptimizer(
             base_model=ClusteredStatisticalTestDriftDetectionMethod,
             parameters=[
-                Parameter("n_samples", values=[500, 1000]),
-                Parameter("confidence", values=[0.1, 0.01]),
+                Parameter("n_samples", values=[500]),#, 1000]),
+                Parameter("confidence", values=[0.1]),#, 0.01]),
                 Parameter("feature_proportion", values=[0.1]),
                 Parameter("n_clusters", values=[2]),
             ],
