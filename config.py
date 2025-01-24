@@ -41,16 +41,16 @@ class Configuration:
 
     model_selection = {
         "BayesianNonparametricDetectionMethod": True,
-        "ClusteredStatisticalTestDriftDetectionMethod": False,
+        "ClusteredStatisticalTestDriftDetectionMethod": True,
         "DiscriminativeDriftDetector2019": False,
         "ImageBasedDriftDetector": False,
-        "OneClassDriftDetector": False,
+        "OneClassDriftDetector": True,
         "SemiParametricLogLikelihood": False,
         "UDetect_Disjoint": False,
         "UDetect_NonDisjoint": False,
-        "KullbackLeiblerDistanceDetector": False,
+        "KullbackLeiblerDistanceDetector": True,
         "JensenShannonDistanceDetector": False,
-        "HellingerDistanceDetector": False
+        "HellingerDistanceDetector": True
     }
 
     streams = []

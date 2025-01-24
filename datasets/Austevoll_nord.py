@@ -1,13 +1,9 @@
 from os import path
-
 from river.datasets import base
 from river import stream
 
 class AustevollNord(base.FileDataset):
-    def __init__(
-        self,
-        directory_path: str = "datasets/files",
-    ):
+    def __init__(self, directory_path: str = "datasets/files"):
         super().__init__(
             n_samples=6986,
             n_features=4,
@@ -17,20 +13,16 @@ class AustevollNord(base.FileDataset):
         self.full_path = path.join(directory_path, self.filename)
 
     def __iter__(self):
+        converters = {
+            "Pressure": float,
+            "Conductivity": float,
+            "Temperature": float,
+            "Salinity": float,
+            "class": int,
+        }
         return stream.iter_csv(
             self.full_path,
-            target="Conductivity",
-            drop=["Date"],  # Exclude the Date column from features
-            parse_dates={},  # No date parsing needed as Date column is dropped
-            converters={
-                "Temperature": float,
-                "Salinity": float,
-                "Pressure": float,
-                "Conductivity": float
-            }
-            )
-        
-    
-
-
-
+            target="class",
+            converters=converters,
+            drop=["Date"]  # Assuming the date column is named "date"
+        )
