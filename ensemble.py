@@ -2,6 +2,10 @@ import os
 import pandas as pd
 from config import Configuration
 
+from typing import List, Optional
+
+
+
 # NB! As of now, if there are muliple runs for each algorithm, the ensemble will only consider the last run.
 # This means that there is only need for one run for each algorithm.
 # And that the algorithms should already be optimized befor running the ensemble.
