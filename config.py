@@ -97,7 +97,7 @@ class Configuration:
         models.append(ModelOptimizer(
             base_model=BayesianNonparametricDetectionMethod,
             parameters=[
-                Parameter("n_samples", values=[500]),#, 1000]),
+                Parameter("window_len_max", values=[500]),#, 1000]),
                 Parameter("const", values=[0.5]),#, 1.0]),
                 Parameter("max_depth", values=[2]),
                 Parameter("threshold", values=[0.5]),

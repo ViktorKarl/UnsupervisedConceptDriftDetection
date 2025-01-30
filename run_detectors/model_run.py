@@ -3,7 +3,11 @@ from optimization.classifiers import Classifiers
 from optimization.config_generator import ConfigGenerator
 from optimization.logger import ExperimentLogger
 from optimization.parameter import Parameter 
+from typing import List, Optional
 
+import pandas as pd
+import numpy as np
+from collections import deque
 
 
 
@@ -12,7 +16,6 @@ class run_model:
             self,
             base_model: callable,
             parameters: List[Parameter],
-            n_runs: int,
             seeds: Optional[List[int]] = None
         ):
             """
@@ -25,7 +28,13 @@ class run_model:
             self.base_model = base_model
             self.configs = ConfigGenerator(parameters, seeds=seeds)
             self.classifiers = None
-            self.n_runs = n_runs  #delete later
+
+        def initialize_logger(self,stream,experiment_name): 
+                self.logger = ExperimentLogger( stream=stream,
+                model=self.base_model.__name__,
+                experiment_name=experiment_name,
+                config_keys=self.configs.get_parameter_names(),
+                )
 
         def _model_generator(self):
             """
@@ -36,7 +45,7 @@ class run_model:
             for config in self.configs:
                 yield self.base_model(**config), config
 
-        def run_model(self, stream, verbose=False,step_size=1):
+        def run_model(self,stream, step_size = 1, verbose=True):
             """
             Optimize the model on the given data stream and log the results using the ExperimentLogger.
 
@@ -44,22 +53,14 @@ class run_model:
             :param experiment_name: the name of the experiment
             :param n_training_samples: the number of training samples
             """
+            buffer = []
             for model, config in self._model_generator():
-                if verbose:
-                    print(f"{logger.model}: {config}")
-                self.classifiers = Classifiers()
+                print(f"{self.logger.model}: {config}") if verbose else None
                 drifts = []
-                labels = []
-                predictions = []
-                train_steps = 0
-                for i, (x, y) in enumerate(stream):
-                    if i != 0:
-                        predictions.append(self.classifiers.predict(x))
-                        labels.append(y)
-                    if model.update(x):
-                        drifts.append(i)
-                        self.classifiers.reset()
-                        train_steps = 0
-                    self.classifiers.fit(x, y, nonadaptive=i < n_training_samples)
-                    train_steps += 1
-            return drifts, labels, predictions
+                for i, (sample, lable) in enumerate(stream):
+                    buffer.append(np.fromiter(sample.values(), dtype=float))
+                    if len(buffer) == step_size:
+                        if model.update(buffer):
+                            drifts.append(i)
+                            buffer.clear()
+            return drifts

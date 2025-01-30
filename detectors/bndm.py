@@ -20,7 +20,7 @@ class BayesianNonparametricDetectionMethod(UnsupervisedDriftDetector):
 
     def __init__(
         self,
-        n_samples: int,
+        window_len_max : int,
         const: float = 1.0,
         threshold: float = 0.5,
         max_depth: int = 3,
@@ -29,14 +29,14 @@ class BayesianNonparametricDetectionMethod(UnsupervisedDriftDetector):
         """
         Initialize a new BayesianNonparametricDetectionMethod.
 
-        :param n_samples: the size of two samples
+        :param window_len_max: the size of two samples
         :param const: the constant used to determine Polya tree test parameters
         :param threshold: the threshold of the drift detection
         :param max_depth: the max depth of the Polya tree
         """
         super().__init__(seed)
-        self.n_samples = n_samples
-        self.data_window = deque(maxlen=2 * n_samples)
+        self.window_len_max  = window_len_max 
+        self.data_window = deque(maxlen=window_len_max)
         self.const = const
         self.threshold = threshold
         self.max_depth = max_depth
@@ -59,6 +59,24 @@ class BayesianNonparametricDetectionMethod(UnsupervisedDriftDetector):
                 test_statistic = 1 / (1 + np.exp(-log_odd_ratios))
                 if test_statistic < self.threshold:
                     self.reset()
+                    return True
+        return False
+
+    def update_new(self, buffer: list) -> bool:
+        """
+        Update the detector with the most recent observation and determine if a drift occurred.
+
+        :param features: the features
+        :returns: True if a drift was detected else False
+        """
+        self.data_window.extend(buffer)
+        if self.data_window.maxlen == len(self.data_window) :
+            for i in range(len(buffer[0])):
+                reference_data, recent_data = self._get_samples(feature_index=i)
+                log_odd_ratios = self.polya_tree_test(reference_data, recent_data, 0)
+                test_statistic = 1 / (1 + np.exp(-log_odd_ratios))
+                if test_statistic < self.threshold:
+                    #self.reset()
                     return True
         return False
 
@@ -151,9 +169,9 @@ class BayesianNonparametricDetectionMethod(UnsupervisedDriftDetector):
         data = np.array(self.data_window)
         data_slice = data[:, feature_index]
         normalized_data_slice = self._normalize(data_slice)
-        sample_one = normalized_data_slice[: self.n_samples]
-        sample_two = normalized_data_slice[self.n_samples:]
-        return sample_one, sample_two
+        reference_data  = normalized_data_slice[: self.window_len_max]
+        recent_data  = normalized_data_slice[self.window_len_max:]
+        return reference_data, recent_data
     
     @staticmethod
     def _normalize(data):
@@ -174,4 +192,4 @@ class BayesianNonparametricDetectionMethod(UnsupervisedDriftDetector):
         """
         Reset the drift detector by deleting the reference data and recent data.
         """
-        self.data_window = deque(maxlen=2 * self.n_samples)
+        self.data_window = deque(maxlen=2 * self.window_len_max)
