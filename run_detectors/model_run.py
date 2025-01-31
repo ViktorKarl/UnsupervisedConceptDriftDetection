@@ -58,6 +58,7 @@ class run_model:
                 print(f"{self.logger.model}: {config}") if verbose else None
                 drifts = []
                 for i, (sample, lable) in enumerate(stream):
+                    if len(model.data_window) 
                     buffer.append(np.fromiter(sample.values(), dtype=float))
                     if len(buffer) == step_size:
                         if model.update(buffer):
