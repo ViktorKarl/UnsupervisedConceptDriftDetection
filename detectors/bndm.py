@@ -20,7 +20,7 @@ class BayesianNonparametricDetectionMethod(UnsupervisedDriftDetector):
 
     def __init__(
         self,
-        window_len_max : int,
+        window_len : int,
         const: float = 1.0,
         threshold: float = 0.5,
         max_depth: int = 3,
@@ -35,8 +35,8 @@ class BayesianNonparametricDetectionMethod(UnsupervisedDriftDetector):
         :param max_depth: the max depth of the Polya tree
         """
         super().__init__(seed)
-        self.window_len_max  = window_len_max 
-        self.data_window = deque(maxlen=window_len_max)
+        self.window_len  = window_len 
+        self.data_window = deque(maxlen=window_len)
         self.const = const
         self.threshold = threshold
         self.max_depth = max_depth
@@ -169,8 +169,8 @@ class BayesianNonparametricDetectionMethod(UnsupervisedDriftDetector):
         data = np.array(self.data_window)
         data_slice = data[:, feature_index]
         normalized_data_slice = self._normalize(data_slice)
-        reference_data  = normalized_data_slice[: self.window_len_max]
-        recent_data  = normalized_data_slice[self.window_len_max:]
+        reference_data  = normalized_data_slice[: self.window_len]
+        recent_data  = normalized_data_slice[self.window_len:]
         return reference_data, recent_data
     
     @staticmethod
@@ -192,4 +192,4 @@ class BayesianNonparametricDetectionMethod(UnsupervisedDriftDetector):
         """
         Reset the drift detector by deleting the reference data and recent data.
         """
-        self.data_window = deque(maxlen=2 * self.window_len_max)
+        self.data_window = deque(maxlen=2 * self.window_len)

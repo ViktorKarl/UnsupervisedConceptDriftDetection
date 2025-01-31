@@ -16,6 +16,7 @@ from datasets import (
     AustevollNord
 )
 from detectors import *
+from run_detectors.model_run import run_model
 from optimization.model_optimizer import ModelOptimizer
 from optimization.parameter import Parameter
 
@@ -41,16 +42,16 @@ class Configuration:
 
     model_selection = {
         "BayesianNonparametricDetectionMethod": True,
-        "ClusteredStatisticalTestDriftDetectionMethod": True,
+        "ClusteredStatisticalTestDriftDetectionMethod": False,
         "DiscriminativeDriftDetector2019": False,
         "ImageBasedDriftDetector": False,
-        "OneClassDriftDetector": True,
+        "OneClassDriftDetector": False,
         "SemiParametricLogLikelihood": False,
         "UDetect_Disjoint": False,
         "UDetect_NonDisjoint": False,
-        "KullbackLeiblerDistanceDetector": True,
+        "KullbackLeiblerDistanceDetector": False,
         "JensenShannonDistanceDetector": False,
-        "HellingerDistanceDetector": True
+        "HellingerDistanceDetector": False
     }
 
     streams = []
@@ -94,16 +95,14 @@ class Configuration:
     models = []
 
     if model_selection["BayesianNonparametricDetectionMethod"]:
-        models.append(ModelOptimizer(
+        models.append(run_model(
             base_model=BayesianNonparametricDetectionMethod,
             parameters=[
-                Parameter("window_len", values=[500]),#, 1000]),
-                Parameter("const", values=[0.5]),#, 1.0]),
+                Parameter("window_len", values=[500]),
+                Parameter("const", values=[0.5]),
                 Parameter("max_depth", values=[2]),
                 Parameter("threshold", values=[0.5]),
             ],
-            seeds=None,
-            n_runs=1,
         ))
 
     if model_selection["ClusteredStatisticalTestDriftDetectionMethod"]:

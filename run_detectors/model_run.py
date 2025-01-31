@@ -1,8 +1,8 @@
 from metrics.metrics import get_metrics
 from optimization.classifiers import Classifiers
-from optimization.config_generator import ConfigGenerator
+from run_detectors.config_generator import ConfigGenerator
 from optimization.logger import ExperimentLogger
-from optimization.parameter import Parameter 
+from run_detectors.parameter import Parameter 
 from typing import List, Optional
 
 import pandas as pd
@@ -16,7 +16,6 @@ class run_model:
             self,
             base_model: callable,
             parameters: List[Parameter],
-            seeds: Optional[List[int]] = None
         ):
             """
             Init a new ModelOptimizer.
@@ -26,15 +25,16 @@ class run_model:
             :param seeds: the seeds or None
             """
             self.base_model = base_model
-            self.configs = ConfigGenerator(parameters, seeds=seeds)
+            self.configs = ConfigGenerator(parameters)
             self.classifiers = None
 
-        def initialize_logger(self,stream,experiment_name): 
+        def initialize_logger(self,stream,experiment_name,config,verbose=False): 
                 self.logger = ExperimentLogger( stream=stream,
                 model=self.base_model.__name__,
                 experiment_name=experiment_name,
                 config_keys=self.configs.get_parameter_names(),
                 )
+                print(f"{self.logger.model}: {config}") if verbose else None
 
         def _model_generator(self):
             """
@@ -45,7 +45,7 @@ class run_model:
             for config in self.configs:
                 yield self.base_model(**config), config
 
-        def run_model(self,stream, step_size = 1, verbose=True):
+        def run(self,stream, step_size = 1):
             """
             Optimize the model on the given data stream and log the results using the ExperimentLogger.
 
@@ -55,13 +55,14 @@ class run_model:
             """
             buffer = []
             for model, config in self._model_generator():
-                print(f"{self.logger.model}: {config}") if verbose else None
                 drifts = []
                 for i, (sample, lable) in enumerate(stream):
-                    if len(model.data_window) 
-                    buffer.append(np.fromiter(sample.values(), dtype=float))
-                    if len(buffer) == step_size:
-                        if model.update(buffer):
-                            drifts.append(i)
-                            buffer.clear()
+                    if model.window_len == len(model.data_window):
+                        buffer.append(np.fromiter(sample.values(), dtype=float))
+                        if len(buffer) == step_size:
+                            if model.update_new(buffer):
+                                drifts.append(i)
+                                buffer.clear()
+                    else:    
+                        model.data_window.append(np.fromiter(sample.values(), dtype=float))
             return drifts

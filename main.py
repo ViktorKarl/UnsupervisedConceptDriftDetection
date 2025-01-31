@@ -4,6 +4,7 @@ import time
 from config import Configuration
 from ensemble import ensemble
 
+stepsize = 5
 
 def main():
     if len(sys.argv) > 1:
@@ -13,9 +14,10 @@ def main():
   
     for stream in Configuration.streams:
         for model in Configuration.models:
-            model.optimize(stream, experiment_name, Configuration.n_training_samples, verbose=True) 
-            # TODO: goal: model.model_run(stream, experiment_name, step_size, verbose=True)
-    ensemble(experiment_name)
+            #model.optimize(stream, experiment_name, Configuration.n_training_samples, verbose=True) 
+            model.run(stream, stepsize)
+            # TODO: goal: model.model_run(model, experiment_name, step_size, verbose=True)
+    #ensemble(experiment_name)
 
 
 if __name__ == "__main__":
