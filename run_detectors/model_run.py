@@ -11,7 +11,7 @@ from collections import deque
 
 
 
-class run_model:
+class detector_runner:
         def __init__(
             self,
             base_model: callable,

@@ -16,7 +16,7 @@ from datasets import (
     AustevollNord
 )
 from detectors import *
-from run_detectors.model_run import run_model
+from run_detectors.model_run import detector_runner
 from optimization.model_optimizer import ModelOptimizer
 from optimization.parameter import Parameter
 
@@ -43,15 +43,15 @@ class Configuration:
     model_selection = {
         "BayesianNonparametricDetectionMethod": False,  # refactored
         "ClusteredStatisticalTestDriftDetectionMethod": False,
-        "DiscriminativeDriftDetector2019": True,
+        "DiscriminativeDriftDetector2019": False, #refactored
         "ImageBasedDriftDetector": False,
         "OneClassDriftDetector": False,
         "SemiParametricLogLikelihood": False, #refactored
         "UDetect_Disjoint": False,
         "UDetect_NonDisjoint": False,
-        "KullbackLeiblerDistanceDetector": False,
-        "JensenShannonDistanceDetector": False,
-        "HellingerDistanceDetector": False
+        "KullbackLeiblerDistanceDetector": False, #refactored
+        "JensenShannonDistanceDetector": False, #refactored
+        "HellingerDistanceDetector": False #refactored
     }
 
     streams = []
@@ -95,7 +95,7 @@ class Configuration:
     models = []
 
     if model_selection["BayesianNonparametricDetectionMethod"]:
-        models.append(run_model(
+        models.append(detector_runner(
             base_model=BayesianNonparametricDetectionMethod,
             parameters=[
                 Parameter("window_len", values=[500]),
@@ -119,7 +119,7 @@ class Configuration:
         ))
 
     if model_selection["DiscriminativeDriftDetector2019"]:
-        models.append(run_model(
+        models.append(detector_runner(
             base_model=DiscriminativeDriftDetector2019,
             parameters=[
                 Parameter("n_reference_samples", values=[100]),
@@ -154,7 +154,7 @@ class Configuration:
         ))
 
     if model_selection["SemiParametricLogLikelihood"]:
-        models.append(run_model(
+        models.append(detector_runner(
             base_model=SemiParametricLogLikelihood,
             parameters=[
                 Parameter("window_len", values=[500]),
@@ -187,32 +187,26 @@ class Configuration:
             n_runs=1,
         ))
     if model_selection["KullbackLeiblerDistanceDetector"]:
-        models.append(ModelOptimizer(
+        models.append(detector_runner(
             base_model=KullbackLeiblerDistanceDetector,
             parameters=[
-                Parameter("n_samples", values=[672]),
-                Parameter("threshold", values=[0.05]),  #[0.01, 0.05, 0.1]),
-            ],
-            seeds=None,
-            n_runs=1,
+                Parameter("window_len", values=[672]),
+                Parameter("threshold", values=[0.05]), 
+            ]
         ))
     if model_selection["JensenShannonDistanceDetector"]:
-        models.append(ModelOptimizer(
+        models.append(detector_runner(
             base_model=JensenShannonDistanceDetector,
             parameters=[
-                Parameter("n_samples", values=[672, 1344]),
-                Parameter("threshold", values=[0.1, 0.2, 0.3]),
-            ],
-            seeds=None,
-            n_runs=1,
+                Parameter("window_len", values=[130]),
+                Parameter("threshold", values=[0.1]),
+            ]
         ))
     if model_selection["HellingerDistanceDetector"]:
-        models.append(ModelOptimizer(
+        models.append(detector_runner(
             base_model=HellingerDistanceDetector,
             parameters=[
-                Parameter("n_samples", values=[672]),
+                Parameter("window_len", values=[150]),
                 Parameter("threshold", values=[0.1]),
-            ],
-            seeds=None,
-            n_runs=1,
+            ]
         ))

@@ -95,12 +95,9 @@ class ensemble_class:
                 config: Configuration,
                 experiment_name: str,
                 thread: bool = False):
+        self.config = config
         self.experiment_name = experiment_name
-        self.stream = config.streams
-        self.models = config.models
-        self.drifts = {}
-        self.labels = {}
-
+        
     def init_detector(self):
         pass
 
