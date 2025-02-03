@@ -16,8 +16,8 @@ def main():
         for model in Configuration.models:
             #model.optimize(stream, experiment_name, Configuration.n_training_samples, verbose=True) 
             model.run(stream, stepsize)
-            # TODO: goal: model.model_run(model, experiment_name, step_size, verbose=True)
-    #ensemble(experiment_name)
+            # TODO: model.model_run(model, experiment_name, step_size, verbose=True)
+
 
 
 if __name__ == "__main__":

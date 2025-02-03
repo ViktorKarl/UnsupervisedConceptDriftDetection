@@ -169,8 +169,8 @@ class BayesianNonparametricDetectionMethod(UnsupervisedDriftDetector):
         data = np.array(self.data_window)
         data_slice = data[:, feature_index]
         normalized_data_slice = self._normalize(data_slice)
-        reference_data  = normalized_data_slice[: self.window_len]
-        recent_data  = normalized_data_slice[self.window_len:]
+        reference_data  = normalized_data_slice[:self.window_len//2]
+        recent_data  = normalized_data_slice[self.window_len//2:]
         return reference_data, recent_data
     
     @staticmethod

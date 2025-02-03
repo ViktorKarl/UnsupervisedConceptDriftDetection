@@ -41,12 +41,12 @@ class Configuration:
     }
 
     model_selection = {
-        "BayesianNonparametricDetectionMethod": True,
+        "BayesianNonparametricDetectionMethod": False,  # refactored
         "ClusteredStatisticalTestDriftDetectionMethod": False,
         "DiscriminativeDriftDetector2019": False,
         "ImageBasedDriftDetector": False,
         "OneClassDriftDetector": False,
-        "SemiParametricLogLikelihood": False,
+        "SemiParametricLogLikelihood": True,
         "UDetect_Disjoint": False,
         "UDetect_NonDisjoint": False,
         "KullbackLeiblerDistanceDetector": False,
@@ -156,15 +156,13 @@ class Configuration:
         ))
 
     if model_selection["SemiParametricLogLikelihood"]:
-        models.append(ModelOptimizer(
+        models.append(run_model(
             base_model=SemiParametricLogLikelihood,
             parameters=[
-                Parameter("n_samples", values=[100, 250, 500, 1000]),
-                Parameter("n_clusters", values=[2, 3]),
-                Parameter("threshold", values=[0.05, 0.005]),
-            ],
-            seeds=None,
-            n_runs=1,
+                Parameter("window_len", values=[500]),
+                Parameter("n_clusters", values=[2]),
+                Parameter("threshold", values=[0.05]),
+            ]
         ))
 
     if model_selection["UDetect_Disjoint"]:

@@ -24,7 +24,7 @@ class SemiParametricLogLikelihood(UnsupervisedDriftDetector):
 
     def __init__(
         self,
-        n_samples: int,
+        window_len: int,
         n_clusters: int,
         threshold: float,
         seed: Optional[int] = None,
@@ -37,30 +37,53 @@ class SemiParametricLogLikelihood(UnsupervisedDriftDetector):
         :param threshold: the threshold for a drift detection
         """
         super().__init__(seed)
-        self.n_samples = n_samples
-        self.recent_data = deque(maxlen=n_samples)
-        self.reference_data = deque(maxlen=n_samples)
+        self.window_len = window_len
+        self.data_window = deque(maxlen=window_len)
+        self.recent_data = deque(maxlen=window_len//2)
+        self.reference_data = deque(maxlen=window_len//2)
         self.n_clusters = n_clusters
         self.kmeans = KMeans(n_clusters=self.n_clusters, random_state=self.seed)
         self.threshold = threshold
 
-    def update(self, features: dict) -> bool:
+    def update_new(self, buffer: list) -> bool:
         """
         Update the detector with the most recent features.
 
         :param features: the features
         :return: True if a drift was detected, else False
         """
-        features = np.fromiter(features.values(), dtype=float)
-        if len(self.recent_data) == self.n_samples:
-            self.reference_data.append(self.recent_data[0])
-        self.recent_data.append(features)
-        if len(self.reference_data) == self.n_samples and len(self.recent_data) == self.n_samples:
+        self.data_window.extend(buffer)
+        # if len(self.recent_data) == self.window_len:
+        #     self.reference_data.append(self.recent_data[0])
+        # self.recent_data.append(features)
+        data_window_list = list(self.data_window)
+        self.reference_data = data_window_list[:self.window_len//2]
+        self.recent_data = data_window_list[self.window_len//2:]
+
+        if len(self.reference_data) == self.window_len//2 and len(self.recent_data) == self.window_len//2:
             drift = self._detect_drift()
             if drift:
-                self.reset()
+                #self.reset()
                 return True
         return False
+        
+    def update(self, features: dict) -> bool:
+            """
+            Update the detector with the most recent features.
+    
+            :param features: the features
+            :return: True if a drift was detected, else False
+            """
+            features = np.fromiter(features.values(), dtype=float)
+            if len(self.recent_data) == self.n_samples:
+                self.reference_data.append(self.recent_data[0])
+            self.recent_data.append(features)
+            if len(self.reference_data) == self.n_samples and len(self.recent_data) == self.n_samples:
+                drift = self._detect_drift()
+                if drift:
+                    self.reset()
+                    return True
+            return False
 
     def _detect_drift(self) -> bool:
         """
@@ -120,11 +143,11 @@ class SemiParametricLogLikelihood(UnsupervisedDriftDetector):
         recent_data = np.array(self.recent_data)
         centered = recent_data - closest_centroids
         likelihoods = []
-        for i in range(self.n_samples):
+        for i in range(self.window_len):
             normalized_x = np.matmul(centered[i], inverse_covariance_matrix)
             likelihood = np.matmul(normalized_x, centered[i])
             likelihoods.append(likelihood)
-        spll = np.sum(likelihoods) / self.n_samples
+        spll = np.sum(likelihoods) / self.window_len
         return spll
 
     def reset(self):
@@ -132,4 +155,4 @@ class SemiParametricLogLikelihood(UnsupervisedDriftDetector):
         Reset the drift detector by clearing the recent data and resetting the KMeans.
         """
         self.reference_data = self.recent_data
-        self.recent_data = deque(maxlen=self.n_samples)
+        self.recent_data = deque(maxlen=self.window_len)

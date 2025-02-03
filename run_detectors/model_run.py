@@ -65,4 +65,5 @@ class run_model:
                                 buffer.clear()
                     else:    
                         model.data_window.append(np.fromiter(sample.values(), dtype=float))
+                        # TODO: legg til update om buffer er null 
             return drifts
