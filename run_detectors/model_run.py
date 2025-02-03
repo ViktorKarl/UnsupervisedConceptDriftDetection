@@ -47,7 +47,7 @@ class run_model:
 
         def run(self,stream, step_size = 1):
             """
-            Optimize the model on the given data stream and log the results using the ExperimentLogger.
+            run datastream through model, handeling windowing 
 
             :param stream: the data stream
             :param experiment_name: the name of the experiment

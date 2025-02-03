@@ -46,7 +46,7 @@ class Configuration:
         "DiscriminativeDriftDetector2019": False,
         "ImageBasedDriftDetector": False,
         "OneClassDriftDetector": False,
-        "SemiParametricLogLikelihood": True,
+        "SemiParametricLogLikelihood": True, #refactored
         "UDetect_Disjoint": False,
         "UDetect_NonDisjoint": False,
         "KullbackLeiblerDistanceDetector": False,
