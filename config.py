@@ -43,10 +43,10 @@ class Configuration:
     model_selection = {
         "BayesianNonparametricDetectionMethod": False,  # refactored
         "ClusteredStatisticalTestDriftDetectionMethod": False,
-        "DiscriminativeDriftDetector2019": False,
+        "DiscriminativeDriftDetector2019": True,
         "ImageBasedDriftDetector": False,
         "OneClassDriftDetector": False,
-        "SemiParametricLogLikelihood": True, #refactored
+        "SemiParametricLogLikelihood": False, #refactored
         "UDetect_Disjoint": False,
         "UDetect_NonDisjoint": False,
         "KullbackLeiblerDistanceDetector": False,
@@ -119,15 +119,13 @@ class Configuration:
         ))
 
     if model_selection["DiscriminativeDriftDetector2019"]:
-        models.append(ModelOptimizer(
+        models.append(run_model(
             base_model=DiscriminativeDriftDetector2019,
             parameters=[
-                Parameter("n_reference_samples", values=[50, 125, 250, 500]),
-                Parameter("recent_samples_proportion", values=[0.1, 0.5, 1.0]),
-                Parameter("threshold", values=[0.6, 0.7, 0.8]),
+                Parameter("n_reference_samples", values=[100]),
+                Parameter("n_recent_samples", values=[50]),
+                Parameter("threshold", values=[0.6]),
             ],
-            seeds=None,
-            n_runs=5,
         ))
 
     if model_selection["ImageBasedDriftDetector"]:

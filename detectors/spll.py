@@ -56,8 +56,9 @@ class SemiParametricLogLikelihood(UnsupervisedDriftDetector):
         self.data_window.extend(buffer)
         self.reference_data.clear()
         self.recent_data.clear()
-        self.recent_data.extend(islice(self.data_window, self.window_len//2))
-        self.reference_data.extend(islice(self.data_window, self.window_len//2, None))
+
+        self.reference_data.extend(islice(self.data_window,0,self.window_len//2))
+        self.recent_data.extend(islice(self.data_window, self.window_len//2, None))
 
         if len(self.reference_data) == self.window_len//2 and len(self.recent_data) == self.window_len//2:
             drift = self._detect_drift()

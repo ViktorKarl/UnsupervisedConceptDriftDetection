@@ -1,4 +1,7 @@
 from typing import Optional
+from collections import deque
+from typing import Optional
+from itertools import islice
 
 import numpy as np
 from sklearn.linear_model import LogisticRegression
@@ -25,9 +28,8 @@ class DiscriminativeDriftDetector2019(UnsupervisedDriftDetector):
     def __init__(
         self,
         n_reference_samples: int = 100,
-        recent_samples_proportion: float = 0.1,
+        n_recent_samples: float = 100,
         threshold: float = 0.7,
-        seed: Optional[int] = None,
     ):
         """
         Init new D3 instance.
@@ -37,13 +39,37 @@ class DiscriminativeDriftDetector2019(UnsupervisedDriftDetector):
             number of data used to represent current concept
         :param threshold: the threshold above which two concepts can be reliably discerned and a drift is signalled
         """
-        super().__init__(seed)
-        self.data = []
+        super().__init__()
         self.n_reference_samples = n_reference_samples
-        self.recent_samples_proportion = recent_samples_proportion
-        self.n_samples = int(n_reference_samples * (1 + recent_samples_proportion))
+        self.n_recent_samples = n_recent_samples
+        self.window_len = int(n_reference_samples + n_recent_samples)
+        self.data_window = deque(maxlen=self.window_len)
+        self.reference_data = deque(maxlen=n_reference_samples)
+        self.recent_data = deque(maxlen=n_recent_samples)
         self.threshold = threshold
         self.kfold = StratifiedKFold(n_splits=2, shuffle=True, random_state=self.seed)
+
+    def update_new(self, buffer: list) -> bool:
+        """
+        Update the detector with the most recent observation and detect if a drift occurred.
+
+        :param features: the features
+        :returns: True if a drift occurred else False
+        """
+        self.data_window.extend(buffer)
+        self.reference_data.clear()
+        self.recent_data.clear()
+
+        self.reference_data.extend(islice(self.data_window, 0, self.n_reference_samples))
+        self.recent_data.extend(islice(self.data_window, self.n_reference_samples, None))
+        
+        
+        
+        if len(self.reference_data) == self.n_reference_samples and len(self.recent_data) == self.n_recent_samples:
+            if self._detect_drift():
+                self.data_window.clear()
+                return True
+        return False
 
     def update(self, features: dict) -> bool:
         """
@@ -53,15 +79,15 @@ class DiscriminativeDriftDetector2019(UnsupervisedDriftDetector):
         :returns: True if a drift occurred else False
         """
         features = np.fromiter(features.values(), dtype=float)
-        if len(self.data) != self.n_samples:
-            self.data.append(features)
+        if len(self.data_window) != self.window_len:
+            self.data_window.append(features)
         else:
             if self._detect_drift():
-                self.data = self.data[self.n_reference_samples :]
+                self.data_window = self.data_window[self.n_reference_samples :]
                 return True
             else:
                 step = int(np.ceil(self.n_reference_samples * self.recent_samples_proportion))
-                self.data = self.data[step:]
+                self.data_window = self.data_window[step:]
         return False
 
     def _detect_drift(self) -> bool:
@@ -72,7 +98,7 @@ class DiscriminativeDriftDetector2019(UnsupervisedDriftDetector):
         """
         labels = self._get_labels()
         discriminator = LogisticRegression(solver="liblinear", random_state=self.seed)
-        predictions = self._predict(discriminator, np.array(self.data), labels)
+        predictions = self._predict(discriminator, np.array(self.data_window), labels)
         auc_score = roc_auc_score(labels, predictions)
         return auc_score >= self.threshold
 
@@ -82,7 +108,7 @@ class DiscriminativeDriftDetector2019(UnsupervisedDriftDetector):
 
         :return: the labels
         """
-        labels = np.zeros(self.n_samples)
+        labels = np.zeros(self.window_len)
         labels[self.n_reference_samples :] = 1
         return labels
 
@@ -95,7 +121,7 @@ class DiscriminativeDriftDetector2019(UnsupervisedDriftDetector):
         :param labels: the labels of the data
         :return: the predictions
         """
-        predictions = np.zeros(self.n_samples)
+        predictions = np.zeros(self.window_len)
         # kfold testing is not described in the paper, but used in the source code provided by the authors
         for train_index, test_index in self.kfold.split(data, labels):
             discriminator.fit(data[train_index], labels[train_index])

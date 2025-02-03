@@ -69,14 +69,17 @@ class BayesianNonparametricDetectionMethod(UnsupervisedDriftDetector):
         :param features: the features
         :returns: True if a drift was detected else False
         """
+        state = False
         self.data_window.extend(buffer)
-        if self.data_window.maxlen == len(self.data_window) :
+        if self.data_window.maxlen == len(self.data_window):
             for i in range(len(buffer[0])):
                 reference_data, recent_data = self._get_samples(feature_index=i)
                 log_odd_ratios = self.polya_tree_test(reference_data, recent_data, 0)
                 test_statistic = 1 / (1 + np.exp(-log_odd_ratios))
                 if test_statistic < self.threshold:
-                    #self.reset()
+                    state = True
+            if state:
+                    self.data_window.clear()
                     return True
         return False
 
