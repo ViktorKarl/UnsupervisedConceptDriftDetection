@@ -1,17 +1,18 @@
 from synthetic_drift_methods import add_synthetic_drifts,load_time_series
 import matplotlib.pyplot as plt
 import numpy as np
+import random
 
 print("TEST")
     
-CSV_PATH = "synthetic_generation/data/SYNTHETIC.csv" 
-OUTPUT_PATH = "synthetic_generation/data/TEST_1.csv"
+CSV_PATH = r"C:\Programming\master_thesis\UnsupervisedConceptDriftDetection\synthetic_generation\data\SYNTHETIC.csv" 
+OUTPUT_PATH = r"C:\Programming\master_thesis\UnsupervisedConceptDriftDetection\synthetic_generation\data\output\SYNTHETIC_applied.csv"
     
 TIME_COL = None     # or "timestamp" if your CSV has a time column
-SEED = 42           # for reproducible random drifts
+SEED = random.randint(1, 1000)          # for reproducible random drifts
 NUM_GRADUAL = 2     # number of gradual drifts
-NUM_ABRUPT = 2      # number of abrupt drifts
-SIGNIFICANCE = 1.0  # how large the drift offsets can be (the "severity")
+NUM_ABRUPT = 0      # number of abrupt drifts
+SIGNIFICANCE = 1.5  # how large the drift offsets can be (the "severity")
 
 df_original = load_time_series(
     csv_path=CSV_PATH, 
@@ -44,12 +45,13 @@ else:
     plt.figure(figsize=(10, 6))
     plt.plot(df_original.index, df_original[column_to_plot], label="Before Drift")
     plt.plot(df_drifted.index, df_drifted[column_to_plot], label="After Drift")
+    plt.plot(df_original.index, df_drifted[column_to_plot]-df_original[column_to_plot] + df_original[column_to_plot].mean(), label="Difference")
     
     # Draw red lines where the class "drift" is 1
-    if 'drift' in df_drifted.columns:
-        drift_indices = df_drifted.index[df_drifted['drift'] == 1]
-        for drift_index in drift_indices:
-            plt.axvline(x=drift_index, color='red', linestyle='--', linewidth=0.8)
+    # if 'drift' in df_drifted.columns:
+    #     drift_indices = df_drifted.index[df_drifted['drift'] == 1]
+    #     for drift_index in drift_indices:
+    #         plt.axvline(x=drift_index, color='red', linestyle='--', linewidth=0.8)
     
     plt.title(f"Column '{column_to_plot}': Before vs. After Synthetic Drifts")
     plt.xlabel("Time / Index")
