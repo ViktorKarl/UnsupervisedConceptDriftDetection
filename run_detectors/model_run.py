@@ -62,8 +62,10 @@ class run_model:
                         if len(buffer) == step_size:
                             if model.update_new(buffer):
                                 drifts.append(i)
-                                buffer.clear()
+                            buffer.clear()
                     else:    
                         model.data_window.append(np.fromiter(sample.values(), dtype=float))
-                        # TODO: legg til update om buffer er null 
+                        if len(buffer) == 0 and len(model.data_window) == model.window_len:
+                            if model.update_new(buffer):
+                                drifts.append(i)
             return drifts

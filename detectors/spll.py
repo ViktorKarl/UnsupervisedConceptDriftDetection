@@ -1,5 +1,6 @@
 from collections import deque
 from typing import Optional
+from itertools import islice
 
 import numpy as np
 import scipy.spatial.distance as distance
@@ -53,17 +54,15 @@ class SemiParametricLogLikelihood(UnsupervisedDriftDetector):
         :return: True if a drift was detected, else False
         """
         self.data_window.extend(buffer)
-        # if len(self.recent_data) == self.window_len:
-        #     self.reference_data.append(self.recent_data[0])
-        # self.recent_data.append(features)
-        data_window_list = list(self.data_window)
-        self.reference_data = data_window_list[:self.window_len//2]
-        self.recent_data = data_window_list[self.window_len//2:]
+        self.reference_data.clear()
+        self.recent_data.clear()
+        self.recent_data.extend(islice(self.data_window, self.window_len//2))
+        self.reference_data.extend(islice(self.data_window, self.window_len//2, None))
 
         if len(self.reference_data) == self.window_len//2 and len(self.recent_data) == self.window_len//2:
             drift = self._detect_drift()
             if drift:
-                #self.reset()
+                self.data_window.clear()
                 return True
         return False
         
@@ -143,7 +142,7 @@ class SemiParametricLogLikelihood(UnsupervisedDriftDetector):
         recent_data = np.array(self.recent_data)
         centered = recent_data - closest_centroids
         likelihoods = []
-        for i in range(self.window_len):
+        for i in range(self.window_len//2):
             normalized_x = np.matmul(centered[i], inverse_covariance_matrix)
             likelihood = np.matmul(normalized_x, centered[i])
             likelihoods.append(likelihood)
