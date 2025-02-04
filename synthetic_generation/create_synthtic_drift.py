@@ -2,17 +2,18 @@ from synthetic_drift_methods import add_synthetic_drifts,load_time_series
 import matplotlib.pyplot as plt
 import numpy as np
 import random
-
-print("TEST")
     
-CSV_PATH = r"C:\Programming\master_thesis\UnsupervisedConceptDriftDetection\synthetic_generation\data\SYNTHETIC.csv" 
-OUTPUT_PATH = r"C:\Programming\master_thesis\UnsupervisedConceptDriftDetection\synthetic_generation\data\output\SYNTHETIC_applied.csv"
+CSV_PATH = "synthetic_generation/data/SYNTHETIC.csv"
+OUTPUT_PATH = "synthetic_generation/data/output/SYNTHETIC_applied.csv"
     
 TIME_COL = None     # or "timestamp" if your CSV has a time column
 SEED = random.randint(1, 1000)          # for reproducible random drifts
-NUM_GRADUAL = 2     # number of gradual drifts
-NUM_ABRUPT = 0      # number of abrupt drifts
-SIGNIFICANCE = 1.5  # how large the drift offsets can be (the "severity")
+NUM_GRADUAL = 0     # number of gradual drifts
+NUM_ABRUPT = 3      # number of abrupt drifts
+SIGNIFICANCE = 2  # how large the drift offsets can be (the "severity")
+SIGMOID = True     # use sigmoid function for gradual drifts, if false linear is used
+
+
 
 df_original = load_time_series(
     csv_path=CSV_PATH, 
@@ -30,6 +31,7 @@ add_synthetic_drifts(
     significance=SIGNIFICANCE,
     random_state=SEED,
     columns=None,  # or specify specific columns
+    sigmoid=SIGMOID, # for gradual drifts
 )
     # Save the drifted data to a new CSV
 df_drifted.to_csv(OUTPUT_PATH, index=bool(TIME_COL))
