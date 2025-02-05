@@ -2,6 +2,14 @@ import pandas as pd
 import numpy as np
 import random
 
+# Function to sample a value from a normal distribution excluding a middle range for the drift to be significant
+def sample_excluding_middle(rng, loc=0.3, scale=0.5, lower=-0.5, upper=0.5):
+    while True:
+        val = rng.normal(loc, scale)
+        if not (lower < val < upper):
+            return val
+
+
 def load_time_series(csv_path, time_col=None, parse_dates=True):
     """
     Load a multivariate time-series from a CSV file into a pandas DataFrame.
@@ -39,11 +47,18 @@ def apply_abrupt_drift(df, position, significance=1.0, columns=None, random_stat
     # Mark these rows in the 'drift' label
     df.iloc[position, df.columns.get_loc("drift")] = 1
     
-    # For each numeric column, choose a random offset
-    for col in columns:
-        offset = rng.normal(loc=0.1, scale=0.3)  # normal distribution
-        offset *= significance
-        df.iloc[position:, df.columns.get_loc(col)] += offset
+    # Apply drift to a random column
+    random_col = rng.choice(columns)
+    # Generate a random offset for the drift
+    # Draws a random sample from a normal (Gaussian) distribution with:
+    # loc = 0 as the mean (the center of the distribution), and
+    # scale = 0.3 as the standard deviation (how spread out the distribution is).
+    offset = sample_excluding_middle(rng, loc=0, scale=0.3) * significance
+    #offset = rng.normal(loc=0, scale=0.3)
+    # Scale the offset by the significance
+    offset *= significance
+    # Apply the drift to the data
+    df.iloc[position:, df.columns.get_loc(random_col)] += offset
 
 def apply_gradual_drift(df, start_pos, end_pos, significance=1.0, columns=None, random_state=None, sigmoid=False):
     if random_state is None:
@@ -62,18 +77,26 @@ def apply_gradual_drift(df, start_pos, end_pos, significance=1.0, columns=None, 
     length = end_pos - start_pos
     df.iloc[start_pos:end_pos, df.columns.get_loc("drift")] = 1
 
-    for col in columns:
-        offset = rng.normal(loc=0, scale=0.5) * significance
+    # Apply drift to a random column
+    random_col = rng.choice(columns)
+    # Generate a random offset for the drift
+    # Draws a random sample from a normal (Gaussian) distribution with:
+    # loc = 0 as the mean (the center of the distribution), and
+    # scale = 0.5 as the standard deviation (how spread out the distribution is).
+    offset = sample_excluding_middle(rng, loc=0, scale=0.5) * significance
+    #offset = rng.normal(loc=0, scale=0.5) * significance
+    # Intervallene for sannsynligheten til -0,7 til 1,3 og -1,2 til 1,8 for henholdsvis 95% og 99,7% sannsynlighet
 
-        for i in range(start_pos, end_pos):
-            progress = (i - start_pos) / float(length)
-            if sigmoid:
-                drift_value = offset / (1 + np.exp(-12*(progress - 0.5)))
-            else:
-                drift_value = offset * progress
-            df.iloc[i, df.columns.get_loc(col)] += drift_value
+    # Apply the drift to the data
+    for i in range(start_pos, end_pos):
+        progress = (i - start_pos) / float(length)
+        if sigmoid:
+            drift_value = offset / (1 + np.exp(-12*(progress - 0.5)))
+        else:
+            drift_value = offset * progress
+        df.iloc[i, df.columns.get_loc(random_col)] += drift_value
 
-        df.iloc[end_pos:, df.columns.get_loc(col)] += offset
+    df.iloc[end_pos:, df.columns.get_loc(random_col)] += offset
 
 
 
@@ -118,7 +141,6 @@ def add_synthetic_drifts(
 
     print(subspaces)
     random.shuffle(subspaces)
-    #print(subspaces.pop())
     print(subspaces)
 
     # For now the drift happends at random places in the dataset. The problem with that is the drifts can overlap and stack on top of each other.
