@@ -28,7 +28,7 @@ class SemiParametricLogLikelihood(UnsupervisedDriftDetector):
         window_len: int,
         n_clusters: int,
         threshold: float,
-        seed: Optional[int] = None,
+        step_size: int = 10
     ):
         """
         Init a new SPLL drift detector.
@@ -37,11 +37,12 @@ class SemiParametricLogLikelihood(UnsupervisedDriftDetector):
         :param n_clusters: the number of clusters created by the kmeans algorithm
         :param threshold: the threshold for a drift detection
         """
-        super().__init__(seed)
+        super().__init__()
         self.window_len = window_len
         self.data_window = deque(maxlen=window_len)
         self.recent_data = deque(maxlen=window_len//2)
         self.reference_data = deque(maxlen=window_len//2)
+        self.step_size = step_size
         self.n_clusters = n_clusters
         self.kmeans = KMeans(n_clusters=self.n_clusters, random_state=self.seed)
         self.threshold = threshold

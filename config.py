@@ -41,17 +41,17 @@ class Configuration:
     }
 
     model_selection = {
-        "BayesianNonparametricDetectionMethod": False,  # refactored
+        "BayesianNonparametricDetectionMethod": True,  # refactored
         "ClusteredStatisticalTestDriftDetectionMethod": False,
-        "DiscriminativeDriftDetector2019": False, #refactored
+        "DiscriminativeDriftDetector2019": True, #refactored
         "ImageBasedDriftDetector": False,
         "OneClassDriftDetector": False,
-        "SemiParametricLogLikelihood": False, #refactored
+        "SemiParametricLogLikelihood": True, #refactored
         "UDetect_Disjoint": False,
         "UDetect_NonDisjoint": False,
-        "KullbackLeiblerDistanceDetector": False, #refactored
-        "JensenShannonDistanceDetector": False, #refactored
-        "HellingerDistanceDetector": False #refactored
+        "KullbackLeiblerDistanceDetector": True, #refactored
+        "JensenShannonDistanceDetector": True, #refactored
+        "HellingerDistanceDetector": True #refactored
     }
 
     streams = []
@@ -99,6 +99,7 @@ class Configuration:
             base_model=BayesianNonparametricDetectionMethod,
             parameters=[
                 Parameter("window_len", values=[500]),
+                Parameter("step_size", values=[10]),
                 Parameter("const", values=[0.5]),
                 Parameter("max_depth", values=[2]),
                 Parameter("threshold", values=[0.5]),
@@ -124,6 +125,7 @@ class Configuration:
             parameters=[
                 Parameter("n_reference_samples", values=[100]),
                 Parameter("n_recent_samples", values=[50]),
+                Parameter("step_size", values=[10]),
                 Parameter("threshold", values=[0.6]),
             ],
         ))
@@ -160,6 +162,7 @@ class Configuration:
                 Parameter("window_len", values=[500]),
                 Parameter("n_clusters", values=[2]),
                 Parameter("threshold", values=[0.05]),
+                Parameter("step_size", values=[10]),
             ]
         ))
 
@@ -192,6 +195,7 @@ class Configuration:
             parameters=[
                 Parameter("window_len", values=[672]),
                 Parameter("threshold", values=[0.05]), 
+                Parameter("step_size", values=[10]),
             ]
         ))
     if model_selection["JensenShannonDistanceDetector"]:
@@ -200,6 +204,7 @@ class Configuration:
             parameters=[
                 Parameter("window_len", values=[130]),
                 Parameter("threshold", values=[0.1]),
+                Parameter("step_size", values=[10]),
             ]
         ))
     if model_selection["HellingerDistanceDetector"]:
@@ -208,5 +213,6 @@ class Configuration:
             parameters=[
                 Parameter("window_len", values=[150]),
                 Parameter("threshold", values=[0.1]),
+                Parameter("step_size", values=[10]),
             ]
         ))

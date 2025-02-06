@@ -45,7 +45,7 @@ class detector_runner:
             for config in self.configs:
                 yield self.base_model(**config), config
 
-        def run(self,stream, step_size = 1):
+        def run(self,stream):
             """
             run datastream through model, handeling windowing 
 
@@ -59,7 +59,7 @@ class detector_runner:
                 for i, (sample, lable) in enumerate(stream):
                     if model.window_len == len(model.data_window):
                         buffer.append(np.fromiter(sample.values(), dtype=float))
-                        if len(buffer) == step_size:
+                        if len(buffer) == model.step_size:
                             if model.update_new(buffer):
                                 drifts.append(i)
                             buffer.clear()

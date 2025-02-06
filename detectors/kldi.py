@@ -10,11 +10,12 @@ class KullbackLeiblerDistanceDetector(UnsupervisedDriftDetector):
     Drift detection using Kullback-Leibler divergence between probability distributions.
     """
 
-    def __init__(self, window_len: int, threshold: float = 0.1):
+    def __init__(self, window_len: int, step_size: int = 10 ,threshold: float = 0.1):
         super().__init__()
         self.window_len = window_len
         self.threshold = threshold
         self.data_window = deque(maxlen=window_len)
+        self.step_size = step_size
 
     def update_new(self, buffer: list) -> bool:
         """
@@ -23,7 +24,6 @@ class KullbackLeiblerDistanceDetector(UnsupervisedDriftDetector):
         :param features: the features
         :returns: True if a drift was detected else False
         """
-        state = False
         self.data_window.extend(buffer)
         if len(self.data_window) == self.window_len:
             data = np.array(self.data_window)
@@ -33,8 +33,6 @@ class KullbackLeiblerDistanceDetector(UnsupervisedDriftDetector):
                 q = self._estimate_pdf(recent_data)
                 kl_div = self._kullback_leibler_divergence(p, q)
                 if kl_div > self.threshold:
-                    state = True
-            if state:
                     self.data_window.clear()
                     return True
         return False

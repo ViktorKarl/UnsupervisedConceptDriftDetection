@@ -29,6 +29,7 @@ class DiscriminativeDriftDetector2019(UnsupervisedDriftDetector):
         self,
         n_reference_samples: int = 100,
         n_recent_samples: float = 100,
+        step_size: int = 10,
         threshold: float = 0.7,
     ):
         """
@@ -48,6 +49,7 @@ class DiscriminativeDriftDetector2019(UnsupervisedDriftDetector):
         self.recent_data = deque(maxlen=n_recent_samples)
         self.threshold = threshold
         self.kfold = StratifiedKFold(n_splits=2, shuffle=True, random_state=self.seed)
+        self.step_size = step_size
 
     def update_new(self, buffer: list) -> bool:
         """
