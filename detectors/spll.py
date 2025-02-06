@@ -47,7 +47,7 @@ class SemiParametricLogLikelihood(UnsupervisedDriftDetector):
         self.kmeans = KMeans(n_clusters=self.n_clusters, random_state=self.seed)
         self.threshold = threshold
 
-    def update_new(self, buffer: list) -> bool:
+    def update(self, buffer: list) -> bool:
         """
         Update the detector with the most recent features.
 
@@ -68,23 +68,23 @@ class SemiParametricLogLikelihood(UnsupervisedDriftDetector):
                 return True
         return False
         
-    def update(self, features: dict) -> bool:
-            """
-            Update the detector with the most recent features.
+    # def update(self, features: dict) -> bool:
+    #         """
+    #         Update the detector with the most recent features.
     
-            :param features: the features
-            :return: True if a drift was detected, else False
-            """
-            features = np.fromiter(features.values(), dtype=float)
-            if len(self.recent_data) == self.n_samples:
-                self.reference_data.append(self.recent_data[0])
-            self.recent_data.append(features)
-            if len(self.reference_data) == self.n_samples and len(self.recent_data) == self.n_samples:
-                drift = self._detect_drift()
-                if drift:
-                    self.reset()
-                    return True
-            return False
+    #         :param features: the features
+    #         :return: True if a drift was detected, else False
+    #         """
+    #         features = np.fromiter(features.values(), dtype=float)
+    #         if len(self.recent_data) == self.n_samples:
+    #             self.reference_data.append(self.recent_data[0])
+    #         self.recent_data.append(features)
+    #         if len(self.reference_data) == self.n_samples and len(self.recent_data) == self.n_samples:
+    #             drift = self._detect_drift()
+    #             if drift:
+    #                 self.reset()
+    #                 return True
+    #         return False
 
     def _detect_drift(self) -> bool:
         """

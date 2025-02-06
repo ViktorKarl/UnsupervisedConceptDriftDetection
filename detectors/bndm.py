@@ -43,27 +43,27 @@ class BayesianNonparametricDetectionMethod(UnsupervisedDriftDetector):
         self.distribution = stats.norm(loc=0, scale=1)
         self.step_size = step_size
 
-    def update(self, features: dict) -> bool:
-        """
-        Update the detector with the most recent observation and determine if a drift occurred.
+    # def update(self, features: dict) -> bool:
+    #     """
+    #     Update the detector with the most recent observation and determine if a drift occurred.
 
-        :param features: the features
-        :returns: True if a drift was detected else False
-        """
-        features = np.fromiter(features.values(), dtype=float)
-        self.data_window.append(features)
-        if len(self.data_window) == self.data_window.maxlen:
-            data = np.array(self.data_window)
-            for i in range(len(features)):
-                sample_one, sample_two = self._get_samples(feature_index=i)
-                log_odd_ratios = self.polya_tree_test(sample_one, sample_two, 0)
-                test_statistic = 1 / (1 + np.exp(-log_odd_ratios))
-                if test_statistic < self.threshold:
-                    self.reset()
-                    return True
-        return False
+    #     :param features: the features
+    #     :returns: True if a drift was detected else False
+    #     """
+    #     features = np.fromiter(features.values(), dtype=float)
+    #     self.data_window.append(features)
+    #     if len(self.data_window) == self.data_window.maxlen:
+    #         data = np.array(self.data_window)
+    #         for i in range(len(features)):
+    #             sample_one, sample_two = self._get_samples(feature_index=i)
+    #             log_odd_ratios = self.polya_tree_test(sample_one, sample_two, 0)
+    #             test_statistic = 1 / (1 + np.exp(-log_odd_ratios))
+    #             if test_statistic < self.threshold:
+    #                 self.reset()
+    #                 return True
+    #     return False
 
-    def update_new(self, buffer: list) -> bool:
+    def update(self, buffer: list) -> bool:
         """
         Update the detector with the most recent observation and determine if a drift occurred.
 

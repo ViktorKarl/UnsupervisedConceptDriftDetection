@@ -51,7 +51,7 @@ class DiscriminativeDriftDetector2019(UnsupervisedDriftDetector):
         self.kfold = StratifiedKFold(n_splits=2, shuffle=True, random_state=self.seed)
         self.step_size = step_size
 
-    def update_new(self, buffer: list) -> bool:
+    def update(self, buffer: list) -> bool:
         """
         Update the detector with the most recent observation and detect if a drift occurred.
 
@@ -73,24 +73,24 @@ class DiscriminativeDriftDetector2019(UnsupervisedDriftDetector):
                 return True
         return False
 
-    def update(self, features: dict) -> bool:
-        """
-        Update the detector with the most recent observation and detect if a drift occurred.
+    # def update(self, features: dict) -> bool:
+    #     """
+    #     Update the detector with the most recent observation and detect if a drift occurred.
 
-        :param features: the features
-        :returns: True if a drift occurred else False
-        """
-        features = np.fromiter(features.values(), dtype=float)
-        if len(self.data_window) != self.window_len:
-            self.data_window.append(features)
-        else:
-            if self._detect_drift():
-                self.data_window = self.data_window[self.n_reference_samples :]
-                return True
-            else:
-                step = int(np.ceil(self.n_reference_samples * self.recent_samples_proportion))
-                self.data_window = self.data_window[step:]
-        return False
+    #     :param features: the features
+    #     :returns: True if a drift occurred else False
+    #     """
+    #     features = np.fromiter(features.values(), dtype=float)
+    #     if len(self.data_window) != self.window_len:
+    #         self.data_window.append(features)
+    #     else:
+    #         if self._detect_drift():
+    #             self.data_window = self.data_window[self.n_reference_samples :]
+    #             return True
+    #         else:
+    #             step = int(np.ceil(self.n_reference_samples * self.recent_samples_proportion))
+    #             self.data_window = self.data_window[step:]
+    #     return False
 
     def _detect_drift(self) -> bool:
         """

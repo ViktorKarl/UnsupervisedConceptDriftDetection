@@ -30,6 +30,6 @@ class UnsupervisedDriftDetector(ABC):
     @abstractmethod
     def update(
         self,
-        features: dict,
+        buffer: list,
     ) -> bool:
         raise NotImplementedError("This abstract base class does not implement update.")

@@ -1,5 +1,5 @@
-from metrics.metrics import get_metrics
-from optimization.classifiers import Classifiers
+
+
 from run_detectors.config_generator import ConfigGenerator
 from optimization.logger import ExperimentLogger
 from run_detectors.parameter import Parameter 
@@ -60,12 +60,12 @@ class detector_runner:
                     if model.window_len == len(model.data_window):
                         buffer.append(np.fromiter(sample.values(), dtype=float))
                         if len(buffer) == model.step_size:
-                            if model.update_new(buffer):
+                            if model.update(buffer):
                                 drifts.append(i)
                             buffer.clear()
                     else:    
                         model.data_window.append(np.fromiter(sample.values(), dtype=float))
                         if len(buffer) == 0 and len(model.data_window) == model.window_len:
-                            if model.update_new(buffer):
+                            if model.update(buffer):
                                 drifts.append(i)
             return drifts

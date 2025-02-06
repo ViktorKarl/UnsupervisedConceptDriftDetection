@@ -18,7 +18,7 @@ class JensenShannonDistanceDetector(UnsupervisedDriftDetector):
         self.step_size = step_size
 
 
-    def update_new(self, buffer: list) -> bool:
+    def update(self, buffer: list) -> bool:
         """
         Update the detector with the most recent observation and determine if a drift occurred.
 
@@ -40,26 +40,26 @@ class JensenShannonDistanceDetector(UnsupervisedDriftDetector):
         else:
             return False
 
-    def update(self, features: dict) -> bool:
-        """
-        Update the detector with the most recent observation and determine if a drift occurred.
+    # def update(self, features: dict) -> bool:
+    #     """
+    #     Update the detector with the most recent observation and determine if a drift occurred.
 
-        :param features: the features
-        :returns: True if a drift was detected else False
-        """
-        features = np.fromiter(features.values(), dtype=float)
-        self.data_window.append(features)
-        if len(self.data_window) == self.data_window.maxlen:
-            data = np.array(self.data_window)
-            for i in range(data.shape[1]):
-                sample_one, sample_two = self._get_samples(i)
-                p = self._estimate_pdf(sample_one)
-                q = self._estimate_pdf(sample_two)
-                js_dist = self._jensen_shannon_distance(p, q)
-                if js_dist > self.threshold:
-                    self.reset()
-                    return True
-        return False
+    #     :param features: the features
+    #     :returns: True if a drift was detected else False
+    #     """
+    #     features = np.fromiter(features.values(), dtype=float)
+    #     self.data_window.append(features)
+    #     if len(self.data_window) == self.data_window.maxlen:
+    #         data = np.array(self.data_window)
+    #         for i in range(data.shape[1]):
+    #             sample_one, sample_two = self._get_samples(i)
+    #             p = self._estimate_pdf(sample_one)
+    #             q = self._estimate_pdf(sample_two)
+    #             js_dist = self._jensen_shannon_distance(p, q)
+    #             if js_dist > self.threshold:
+    #                 self.reset()
+    #                 return True
+    #     return False
 
     def reset(self):
         """
