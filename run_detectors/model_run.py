@@ -1,19 +1,21 @@
-from metrics.metrics import get_metrics
-from optimization.classifiers import Classifiers
-from optimization.config_generator import ConfigGenerator
+
+
+from run_detectors.config_generator import ConfigGenerator
 from optimization.logger import ExperimentLogger
-from optimization.parameter import Parameter 
+from run_detectors.parameter import Parameter 
+from typing import List, Optional
+
+import pandas as pd
+import numpy as np
+from collections import deque
 
 
 
-
-class run_model:
+class detector_runner:
         def __init__(
             self,
             base_model: callable,
             parameters: List[Parameter],
-            n_runs: int,
-            seeds: Optional[List[int]] = None
         ):
             """
             Init a new ModelOptimizer.
@@ -23,9 +25,16 @@ class run_model:
             :param seeds: the seeds or None
             """
             self.base_model = base_model
-            self.configs = ConfigGenerator(parameters, seeds=seeds)
+            self.configs = ConfigGenerator(parameters)
             self.classifiers = None
-            self.n_runs = n_runs  #delete later
+
+        def initialize_logger(self,stream,experiment_name,config,verbose=False): 
+                self.logger = ExperimentLogger( stream=stream,
+                model=self.base_model.__name__,
+                experiment_name=experiment_name,
+                config_keys=self.configs.get_parameter_names(),
+                )
+                print(f"{self.logger.model}: {config}") if verbose else None
 
         def _model_generator(self):
             """
@@ -36,30 +45,27 @@ class run_model:
             for config in self.configs:
                 yield self.base_model(**config), config
 
-        def run_model(self, stream, verbose=False,step_size=1):
+        def run(self,stream):
             """
-            Optimize the model on the given data stream and log the results using the ExperimentLogger.
+            run datastream through model, handeling windowing 
 
             :param stream: the data stream
             :param experiment_name: the name of the experiment
             :param n_training_samples: the number of training samples
             """
+            buffer = []
             for model, config in self._model_generator():
-                if verbose:
-                    print(f"{logger.model}: {config}")
-                self.classifiers = Classifiers()
                 drifts = []
-                labels = []
-                predictions = []
-                train_steps = 0
-                for i, (x, y) in enumerate(stream):
-                    if i != 0:
-                        predictions.append(self.classifiers.predict(x))
-                        labels.append(y)
-                    if model.update(x):
-                        drifts.append(i)
-                        self.classifiers.reset()
-                        train_steps = 0
-                    self.classifiers.fit(x, y, nonadaptive=i < n_training_samples)
-                    train_steps += 1
-            return drifts, labels, predictions
+                for i, (sample, lable) in enumerate(stream):
+                    if model.window_len == len(model.data_window):
+                        buffer.append(np.fromiter(sample.values(), dtype=float))
+                        if len(buffer) == model.step_size:
+                            if model.update(buffer):
+                                drifts.append(i)
+                            buffer.clear()
+                    else:    
+                        model.data_window.append(np.fromiter(sample.values(), dtype=float))
+                        if len(buffer) == 0 and len(model.data_window) == model.window_len:
+                            if model.update(buffer):
+                                drifts.append(i)
+            return drifts

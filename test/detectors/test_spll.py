@@ -7,7 +7,7 @@ from test.detectors.helper import get_simple_random_stream_drifts
 class SPLLTest(unittest.TestCase):
     def setUp(self) -> None:
         self.detector = SemiParametricLogLikelihood(
-            n_samples=20, n_clusters=2, threshold=0.0005
+            window_len=20, n_clusters=2, threshold=0.0005
         )
 
     def test_simple_detection(self):

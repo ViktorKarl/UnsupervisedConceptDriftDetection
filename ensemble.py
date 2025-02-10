@@ -90,6 +90,22 @@ def ensemble(experiment_name):
 #########################################################################
 
 
+class ensemble_class:
+    def __init__(self,
+                config: Configuration,
+                experiment_name: str,
+                thread: bool = False):
+        self.config = config
+        self.experiment_name = experiment_name
+        
+    def init_detector(self):
+        pass
+
+    def run_ensemble(self):
+        # Load the results from the models
+        # For each stream, for each model, get the drifts
+        # If a drift is found by a majority of the models, then it is a drift
+        # Save the results to a CSV file
+        pass
 
 
-    
