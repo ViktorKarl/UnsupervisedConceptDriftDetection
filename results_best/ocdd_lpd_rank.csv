@@ -1,0 +1,16 @@
+n_samples,outlier_detector_kwargs,threshold,Electricity,InsectsAbruptBalanced,InsectsGradualBalanced,InsectsIncrementalAbruptBalanced,InsectsIncrementalBalanced,InsectsIncrementalReoccurringBalanced,OutdoorObjects,PokerHand,RialtoBridgeTimelapse,SineClusters,WaveformDrift2,mean rank,mean % rank
+1000,"{'nu': 0.5, 'kernel': 'rbf', 'gamma': 'auto'}",0.4,1.0,,3.0,,,4.0,1.0,,2,,,2.2,0.14666666666666667
+1000,"{'nu': 0.5, 'kernel': 'rbf', 'gamma': 'auto'}",0.5,2.0,1.0,2.0,1.0,1.0,1.0,,1.0,1,1.0,1.0,1.2,0.08
+500,"{'nu': 0.5, 'kernel': 'rbf', 'gamma': 'auto'}",0.5,3.0,2.0,1.0,2.0,2.0,2.0,4.0,2.0,4,,,2.4444444444444446,0.16296296296296298
+250,"{'nu': 0.5, 'kernel': 'rbf', 'gamma': 'auto'}",0.5,,3.0,6.0,3.0,3.0,3.0,2.0,3.0,8,,,3.875,0.25833333333333336
+500,"{'nu': 0.5, 'kernel': 'rbf', 'gamma': 'auto'}",0.4,,4.0,4.0,5.0,,5.0,3.0,,5,,,4.333333333333333,0.28888888888888886
+100,"{'nu': 0.5, 'kernel': 'rbf', 'gamma': 'auto'}",0.5,,5.0,7.0,6.0,4.0,9.0,9.0,4.0,12,,,7.0,0.4666666666666667
+250,"{'nu': 0.5, 'kernel': 'rbf', 'gamma': 'auto'}",0.4,,6.0,8.0,7.0,5.0,7.0,6.0,,11,,,7.142857142857143,0.4761904761904762
+100,"{'nu': 0.5, 'kernel': 'rbf', 'gamma': 'auto'}",0.4,,7.0,10.0,8.0,6.0,10.0,10.0,,13,,,9.142857142857142,0.6095238095238095
+100,"{'nu': 0.5, 'kernel': 'rbf', 'gamma': 'auto'}",0.3,,8.0,11.0,9.0,7.0,11.0,11.0,,14,,,10.142857142857142,0.6761904761904761
+500,"{'nu': 0.5, 'kernel': 'rbf', 'gamma': 'auto'}",0.3,,,5.0,4.0,,6.0,5.0,,7,,,5.4,0.36000000000000004
+250,"{'nu': 0.5, 'kernel': 'rbf', 'gamma': 'auto'}",0.3,,,9.0,,,8.0,7.0,,9,,,8.25,0.55
+100,"{'nu': 0.5, 'kernel': 'rbf', 'gamma': 'auto'}",0.2,,,12.0,,,,,,15,,,13.5,0.9
+250,"{'nu': 0.5, 'kernel': 'rbf', 'gamma': 'auto'}",0.2,,,,,,,8.0,,10,,,9.0,0.6
+1000,"{'nu': 0.5, 'kernel': 'rbf', 'gamma': 'auto'}",0.3,,,,,,,,,3,,,3.0,0.2
+500,"{'nu': 0.5, 'kernel': 'rbf', 'gamma': 'auto'}",0.2,,,,,,,,,6,,,6.0,0.4

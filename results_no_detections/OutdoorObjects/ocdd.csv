@@ -1,0 +1,2 @@
+seed,n_samples,outlier_detector_kwargs,threshold,lpd (ht),lpd (nb),acc (ht-no dd),acc (nb-no dd),acc (ht-dd),acc (nb-dd),f1 (ht-no dd),f1 (nb-no dd),f1 (ht-dd),f1 (nb-dd),drifts
+1734287780,1000,"{'nu': 0.5, 'kernel': 'rbf', 'gamma': 'auto'}",0.5,0.0,0.0,0.3580895223805951,0.3328332083020755,0.5586396599149788,0.4998749687421855,0.3091919346654753,0.2535892231258899,0.5215622611803485,0.4329060673446733,[]
