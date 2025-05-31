@@ -2,7 +2,7 @@
 
 This repository extends the original work by Lukats et al. (https://github.com/DFKI-NI/unsupervised-concept-drift-detection), introducing new detectors, enhanced hyperparameter optimization, improved workflows, and reproducible experiments for fully unsupervised concept drift detection on real-world and synthetic data streams.
 
-The corresponding paper is published in the *International Journal of Data Science and Analytics* (https://link.springer.com/article/10.1007/s41060-024-00620-y).
+The paper by Lukats et al. is published in the *International Journal of Data Science and Analytics* (https://link.springer.com/article/10.1007/s41060-024-00620-y).
 
 ---
 
