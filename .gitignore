@@ -13,6 +13,8 @@ visualization/data/*
 # large dataset files
 datasets/files/*.arff
 datasets/files/*.csv
+!/datasets/files/synthetic_drift_20_years_sesonal.csv
+!/datasets/files/synthetic_drift_20_years_non_season.csv
 datasets/files/*.zip
 datasets/files/*.DS_Store
 # result csvs
